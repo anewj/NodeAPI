@@ -1,4 +1,5 @@
 {
-  "connectionString": "mongodb+srv://USERNAME:PASSWORD@MONGODB_CONNECTION",
-  "secret": "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
+  "connectionString": "mongodb://localhost/billingSystem",
+  "secret": "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING",
+  "superAdmin": "pasdn389asd*h&h9hJWU8"
 }

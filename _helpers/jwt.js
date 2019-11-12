@@ -9,6 +9,7 @@ function jwt() {
     return expressJwt({ secret, isRevoked }).unless({
         path: [
             // public routes that don't require authentication
+            // '/',
             '/users/authenticate',
             '/users/register',
             //use regex to include whole folder
@@ -16,6 +17,9 @@ function jwt() {
             /\/carousel/i,
             /\/manufacture/i,
             /\/cart/i,
+            /\/role/i,
+            /\/userRoles/i,
+            /\/users/i,
         ]
     });
 }

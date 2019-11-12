@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('../_helpers/db');
 const User = db.User;
+const User_Role = db.UserRole;
+const ROLE = db.Role;
 
 module.exports = {
     authenticate,
@@ -16,12 +18,20 @@ module.exports = {
 async function authenticate({ username, password }) {
     const user = await User.findOne({ username });
     if (user && bcrypt.compareSync(password, user.hash)) {
-        const { hash, ...userWithoutHash } = user.toObject();
-        const token = jwt.sign({ sub: user.id }, config.secret);
-        return {
-            ...userWithoutHash,
-            token
-        };
+        const user_role = await User_Role.findOne({'user_id': user.id});
+        if(user_role) {
+            const role = await ROLE.findById(user_role.role_id);
+            if(role) {
+                const { hash, ...userWithoutHash } = user.toObject();
+                const { id, code, ...userWithoutJJ} = role.toObject();
+                const token = jwt.sign({ sub: user.id, role: role.code }, config.secret);
+                return {
+                    ...userWithoutHash,
+                    token,
+                    ...userWithoutJJ
+                };
+            }
+        }
     }
 }
 
@@ -48,6 +58,7 @@ async function create(userParam) {
 
     // save user
     await user.save();
+    return  user;
 }
 
 async function update(id, userParam) {

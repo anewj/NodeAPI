@@ -1,5 +1,6 @@
 const db = require('../_helpers/db');
 const Product = db.Product;
+const mongoose = require('mongoose');
 
 module.exports = {
     create,
@@ -10,7 +11,11 @@ module.exports = {
 };
 async function create(productParam) {
     // save product
+    // productParam._id = new mongoose.Types.ObjectId();
     const product = new Product(productParam);
+
+    // console.log(productParam)
+    // product._id = new mongoose.Types.ObjectId();
     await product.save();
     return product;
 }

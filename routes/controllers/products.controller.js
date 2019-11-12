@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const productService = require('services/product.service');
+const priceService = require('services/price.service');
+const stockService = require('services/stock.service');
+const mongoose = require('mongoose');
+const authorize = require('_helpers/authorize');
+
+
 var fs = require('fs');
 
 // routes
@@ -20,7 +26,33 @@ function getAllProducts(req, res, next) {
 
 function newProduct(req, res, next) {
     productService.create(req.body)
-        .then(data => res.json(data))
+        .then(productData => {
+            var priceJson = {
+                product_id: productData._id,
+                price: req.body.price
+            };
+            priceService.create(priceJson)
+                .then(priceData => {
+                    var stockJson = {
+                        product_id: productData._id,
+                        quantity: req.body.quantity
+                    };
+                    stockService.create(stockJson)
+                        .then(stockData => {
+                            let resultJson = {};
+                            resultJson["_id"] = productData._id;
+                            resultJson["name"] = productData.name;
+                            resultJson["code"] = productData.code;
+                            resultJson["weight"] = productData.weight;
+                            resultJson["price"] = priceData;
+                            resultJson.quantity = stockData;
+
+                            res.json(resultJson);
+                        })
+                        .catch(err => next(err));
+                })
+                .catch(err => next(err));
+        })
         .catch(err => next(err));
 }
 

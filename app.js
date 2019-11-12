@@ -10,13 +10,16 @@ const errorHandler = require('_helpers/error-handler');
 
 //import routers
 const usersRouter = require('./routes/controllers/users.controller');
+const priceRouter = require('./routes/controllers/price.controller');
+const roleRouter = require('./routes/controllers/role.controller');
+const user_roleRouter = require('./routes/controllers/user_role.controller');
 const productRouter = require('./routes/controllers/products.controller');
 const carouselRouter = require('./routes/controllers/carousel.controller');
 const manufacturerRouter = require('./routes/controllers/manufacturers.controller');
 const cartRouter = require('./routes/controllers/cart.controller');
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -29,7 +32,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 //define router paths
+// app.use("/", function (req, res) {
+//     // res.send("Authenticate user to use API.")
+//     res.send("register User from : '/users/authenticate' or register from '/users/register'")
+// });
 app.use('/users', usersRouter);
+app.use('/userRoles', user_roleRouter);
+app.use('/price', priceRouter);
+app.use('/role', roleRouter);
 app.use('/products',productRouter);
 app.use('/carousel',carouselRouter);
 app.use('/manufacturer',manufacturerRouter);
