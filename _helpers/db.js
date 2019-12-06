@@ -17,4 +17,5 @@ module.exports = {
     Cart: require('../db/models/cart.model'),
     Role: require('../db/models/role.model'),
     UserRole: require('../db/models/user_role.model'),
+    Unit: require('../db/models/unit.model'),
 };

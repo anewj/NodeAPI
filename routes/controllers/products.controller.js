@@ -20,40 +20,50 @@ module.exports = router;
 
 function getAllProducts(req, res, next) {
     productService.getAll()
-        .then(product => res.json(product))
+        .then(product => {
+            res.json(product)
+        })
         .catch(err => next(err));
 }
 
+// function newProduct(req, res, next) {
+//     productService.create(req.body)
+//         .then(productData => {
+//             var priceJson = {
+//                 product_id: productData._id,
+//                 price: req.body.price
+//             };
+//             priceService.create(priceJson)
+//                 .then(priceData => {
+//                     var stockJson = {
+//                         product_id: productData._id,
+//                         quantity: req.body.quantity
+//                     };
+//                     stockService.create(stockJson)
+//                         .then(stockData => {
+//                             let resultJson = {};
+//                             resultJson["_id"] = productData._id;
+//                             resultJson["name"] = productData.name;
+//                             resultJson["code"] = productData.code;
+//                             resultJson["weight"] = productData.weight;
+//                             resultJson["price"] = priceData;
+//                             resultJson.quantity = stockData;
+//
+//                             res.json(resultJson);
+//                         })
+//                         .catch(err => next(err));
+//                 })
+//                 .catch(err => next(err));
+//         })
+//         .catch(err => next(err));
+// }
 function newProduct(req, res, next) {
+    console.log(req.body);
     productService.create(req.body)
         .then(productData => {
-            var priceJson = {
-                product_id: productData._id,
-                price: req.body.price
-            };
-            priceService.create(priceJson)
-                .then(priceData => {
-                    var stockJson = {
-                        product_id: productData._id,
-                        quantity: req.body.quantity
-                    };
-                    stockService.create(stockJson)
-                        .then(stockData => {
-                            let resultJson = {};
-                            resultJson["_id"] = productData._id;
-                            resultJson["name"] = productData.name;
-                            resultJson["code"] = productData.code;
-                            resultJson["weight"] = productData.weight;
-                            resultJson["price"] = priceData;
-                            resultJson.quantity = stockData;
-
-                            res.json(resultJson);
-                        })
-                        .catch(err => next(err));
-                })
-                .catch(err => next(err));
+            res.json(productData);
         })
-        .catch(err => next(err));
+        .catch(err=> next(err))
 }
 
 function getProducts(req, res, next) {

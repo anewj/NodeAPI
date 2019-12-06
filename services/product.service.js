@@ -21,7 +21,7 @@ async function create(productParam) {
 }
 
 async function getAll() {
-    return await Product.find();
+    return await Product.find().populate('units.unit');
 }
 
 async function getProduct(preOrder) {

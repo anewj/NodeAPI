@@ -17,6 +17,7 @@ const productRouter = require('./routes/controllers/products.controller');
 const carouselRouter = require('./routes/controllers/carousel.controller');
 const manufacturerRouter = require('./routes/controllers/manufacturers.controller');
 const cartRouter = require('./routes/controllers/cart.controller');
+const unitRouter = require('./routes/controllers/unit.controller');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -37,6 +38,7 @@ app.use(cookieParser());
 //     res.send("register User from : '/users/authenticate' or register from '/users/register'")
 // });
 app.use('/users', usersRouter);
+app.use('/unit', unitRouter);
 app.use('/userRoles', user_roleRouter);
 app.use('/price', priceRouter);
 app.use('/role', roleRouter);
