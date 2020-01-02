@@ -14,7 +14,7 @@ async function create(priceParam) {
 }
 
 async function getAll() {
-    return await Price.find();
+    return await Price.find().populate(['product_id','unit_id']);
 }
 
 async function getById(id) {

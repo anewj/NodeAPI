@@ -14,7 +14,7 @@ async function create(stockParam) {
 }
 
 async function getAll() {
-    return await Stock.find();
+    return await Stock.find().populate(['product_id','unit_id']);
 }
 
 async function getById(id) {

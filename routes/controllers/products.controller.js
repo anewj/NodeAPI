@@ -58,12 +58,23 @@ function getAllProducts(req, res, next) {
 //         .catch(err => next(err));
 // }
 function newProduct(req, res, next) {
-    console.log(req.body);
+    // console.log(req.body);
     productService.create(req.body)
         .then(productData => {
             res.json(productData);
         })
-        .catch(err=> next(err))
+        .catch(err=> {
+            console.log(err)
+
+            let error_data = [];
+            for(data in err.errors) {
+                error_data.push(
+                    err.errors[data]
+                )
+            }
+
+            return res.status(400).send({message: error_data})
+        })
 }
 
 function getProducts(req, res, next) {

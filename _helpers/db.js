@@ -18,4 +18,7 @@ module.exports = {
     Role: require('../db/models/role.model'),
     UserRole: require('../db/models/user_role.model'),
     Unit: require('../db/models/unit.model'),
+    Vendor: require('../db/models/vendor.model'),
+    Party: require('../db/models/party.model'),
+    StockLocation: require('../db/models/stock_location.model'),
 };

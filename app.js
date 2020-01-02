@@ -18,6 +18,10 @@ const carouselRouter = require('./routes/controllers/carousel.controller');
 const manufacturerRouter = require('./routes/controllers/manufacturers.controller');
 const cartRouter = require('./routes/controllers/cart.controller');
 const unitRouter = require('./routes/controllers/unit.controller');
+const stockRouter = require('./routes/controllers/stock.controller');
+const vendorRouter = require('./routes/controllers/vendor.controller');
+const partyRouter = require('./routes/controllers/party.controller');
+const stock_locationRouter = require('./routes/controllers/stock_location.controller');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -46,6 +50,10 @@ app.use('/products',productRouter);
 app.use('/carousel',carouselRouter);
 app.use('/manufacturer',manufacturerRouter);
 app.use('/cart',cartRouter);
+app.use('/stock',stockRouter);
+app.use('/vendor',vendorRouter);
+app.use('/party',partyRouter);
+app.use('/stock_location',stock_locationRouter);
 
 //API Error Handler
 app.use(errorHandler);
