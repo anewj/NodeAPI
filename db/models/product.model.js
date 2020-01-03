@@ -11,6 +11,7 @@ const schema = new Schema({
         rate: {type:Number, required: true},
         // rateWith1: {type: Number, required:true}
     }],
+    vendor: {type: Schema.Types.ObjectId, ref: 'Vendor', required: true},
     createdDate: {type: Date, default: Date.now},
     updatedDate: {type: Date, default: Date.now}
 });

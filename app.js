@@ -22,6 +22,7 @@ const stockRouter = require('./routes/controllers/stock.controller');
 const vendorRouter = require('./routes/controllers/vendor.controller');
 const partyRouter = require('./routes/controllers/party.controller');
 const stock_locationRouter = require('./routes/controllers/stock_location.controller');
+const user_settingsRouter = require('./routes/controllers/user_settings.controller');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,7 +30,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // use JWT auth to secure the api
-app.use(jwt());
+// app.use(jwt());
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -54,6 +55,7 @@ app.use('/stock',stockRouter);
 app.use('/vendor',vendorRouter);
 app.use('/party',partyRouter);
 app.use('/stock_location',stock_locationRouter);
+app.use('/user_settings',user_settingsRouter);
 
 //API Error Handler
 app.use(errorHandler);

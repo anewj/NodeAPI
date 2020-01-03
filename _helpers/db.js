@@ -21,4 +21,5 @@ module.exports = {
     Vendor: require('../db/models/vendor.model'),
     Party: require('../db/models/party.model'),
     StockLocation: require('../db/models/stock_location.model'),
+    UserSettings: require('../db/models/userSettings.model'),
 };

@@ -26,6 +26,7 @@ async function authenticate({ username, password }) {
                 const { id, code, ...userWithoutJJ} = role.toObject();
                 const token = jwt.sign({ sub: user.id, role: role.code }, config.secret);
                 return {
+                    user_id: user.id,
                     ...userWithoutHash,
                     token,
                     ...userWithoutJJ
