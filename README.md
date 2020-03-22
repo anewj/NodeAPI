@@ -29,11 +29,11 @@ URL: localhost:4044/users/register
 Request: POST
 Body:
 {
-  "lastName": "a",
-  "firstName": "a",
-  "password": "a",
-  "username": "azas",
-  "email":"azas@sgmail.com",
+  "lastName": "Admin",
+  "firstName": "Super",
+  "password": "sadmin",
+  "username": "sadmin",
+  "email":"sadmin@sgmail.com",
   "pw":"pasdn389asd*h&h9hJWU8"
 }
 
