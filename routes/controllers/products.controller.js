@@ -15,6 +15,8 @@ router.get('/', getAllProducts);
 router.get('/:id', getById);
 router.get('/query/:field&:id', getByManufacturer);
 router.get('/preOrder/:preOrder', getProducts);
+router.get('/stock/:id', getStock);
+router.get('/price/:id', getPrice);
 
 module.exports = router;
 
@@ -85,6 +87,18 @@ function getProducts(req, res, next) {
 
 function getById(req, res, next) {
     productService.getById(req.params.id)
+        .then(product => product ? res.json(product) : res.sendStatus(404))
+        .catch(err => next(err));
+}
+
+function getStock(req, res, next) {
+    productService.getStock(req.params.id)
+        .then(product => product ? res.json(product) : res.sendStatus(404))
+        .catch(err => next(err));
+}
+
+function getPrice(req, res, next) {
+    productService.getPrice(req.params.id)
         .then(product => product ? res.json(product) : res.sendStatus(404))
         .catch(err => next(err));
 }
