@@ -19,7 +19,7 @@ To run,
 **Insert roles:** 
 1. Open terminal and access mongoDB.
 2. Use database 
-  use erp;
+  - use erp;
 3. Insert roles
   db.roles.insertMany([{ role: "Admin", code: "admin" },{ role: "Super Admin", code: "super_admin" },{ role: "user", code: "user" }])
 
