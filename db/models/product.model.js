@@ -6,7 +6,7 @@ const schema = new Schema({
     name: {type: String, required: true, unique: true},
     // weight: {type: Number, required: true, default: 0},
     units: [{
-        position: {type: Number, required: true, unique: true, default: 0},
+        position: {type: Number, required: true},
         unit: {type: Schema.Types.ObjectId, ref: 'Unit', required: true},
         rate: {type:Number, required: true},
         // rateWith1: {type: Number, required:true}
