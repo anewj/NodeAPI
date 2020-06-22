@@ -13,6 +13,7 @@ module.exports = {
     getByManufacturer,
     getStock,
     getPrice,
+    update
 };
 
 async function create(productParam) {
@@ -24,6 +25,12 @@ async function create(productParam) {
     // product._id = new mongoose.Types.ObjectId();
     await product.save();
     return product;
+}
+
+async function update(productParam) {
+    // save product
+    const product = new Product(productParam);
+    return await Product.findOneAndUpdate({_id: productParam._id}, product);
 }
 
 async function getAll() {

@@ -5,12 +5,18 @@ module.exports = {
     create,
     getAll,
     getById,
+    update
 };
 async function create(stockParam) {
     // save product
     const stock = new Stock(stockParam);
     await stock.save();
     return stock;
+}
+
+async function update(stockParam) {
+    const stock = new Stock(stockParam);
+    return await Stock.findOneAndUpdate({_id: stockParam._id}, stock);
 }
 
 async function getAll() {

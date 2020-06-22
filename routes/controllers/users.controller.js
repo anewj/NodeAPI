@@ -10,7 +10,8 @@ const config = require('config/config.json');
 
 // routes
 router.post('/authenticate', authenticate);
-router.post('/register', authorize([Role.SuperAdmin, Role.Admin]), register);
+// router.post('/register', authorize([Role.SuperAdmin, Role.Admin]), register);
+router.post('/register', register);
 router.get('/', authorize([Role.SuperAdmin, Role.Admin]), getAll); // admin only
 router.get('/current', getCurrent);
 router.get('/:id', authorize(), getById);       // all authenticated users

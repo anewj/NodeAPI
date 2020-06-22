@@ -5,13 +5,19 @@ module.exports = {
     create,
     getAll,
     getById,
-    getByProductId
+    getByProductId,
+    update
 };
 async function create(priceParam) {
     // save product
     const price = new Price(priceParam);
     await price.save();
     return price;
+}
+
+async function update(priceParam) {
+    const price = new Price(priceParam);
+    return await Price.findOneAndUpdate({_id: priceParam._id}, price);
 }
 
 async function getAll() {

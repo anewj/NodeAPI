@@ -7,6 +7,7 @@ var fs = require('fs');
 
 // routes
 router.post('/', insertPrice);
+router.post('/update', updatePrice);
 router.get('/', getAllPrices);
 router.get('/:id', getById);
 
@@ -20,6 +21,12 @@ function getAllPrices(req, res, next) {
 
 function insertPrice(req, res, next) {
     priceService.create(req.body)
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+
+function updatePrice(req, res, next) {
+    priceService.update(req.body)
         .then(data => res.json(data))
         .catch(err => next(err));
 }

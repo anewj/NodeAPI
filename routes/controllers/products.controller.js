@@ -10,13 +10,14 @@ const authorize = require('_helpers/authorize');
 var fs = require('fs');
 
 // routes
-router.post('/new', newProduct);
+router.post('/', newProduct);
 router.get('/', getAllProducts);
 router.get('/:id', getById);
 router.get('/query/:field&:id', getByManufacturer);
 router.get('/preOrder/:preOrder', getProducts);
 router.get('/stock/:id', getStock);
 router.get('/price/:id', getPrice);
+router.post('/update', updateProduct);
 
 module.exports = router;
 
@@ -28,39 +29,7 @@ function getAllProducts(req, res, next) {
         .catch(err => next(err));
 }
 
-// function newProduct(req, res, next) {
-//     productService.create(req.body)
-//         .then(productData => {
-//             var priceJson = {
-//                 product_id: productData._id,
-//                 price: req.body.price
-//             };
-//             priceService.create(priceJson)
-//                 .then(priceData => {
-//                     var stockJson = {
-//                         product_id: productData._id,
-//                         quantity: req.body.quantity
-//                     };
-//                     stockService.create(stockJson)
-//                         .then(stockData => {
-//                             let resultJson = {};
-//                             resultJson["_id"] = productData._id;
-//                             resultJson["name"] = productData.name;
-//                             resultJson["code"] = productData.code;
-//                             resultJson["weight"] = productData.weight;
-//                             resultJson["price"] = priceData;
-//                             resultJson.quantity = stockData;
-//
-//                             res.json(resultJson);
-//                         })
-//                         .catch(err => next(err));
-//                 })
-//                 .catch(err => next(err));
-//         })
-//         .catch(err => next(err));
-// }
 function newProduct(req, res, next) {
-    // console.log(req.body);
     productService.create(req.body)
         .then(productData => {
             res.json(productData);
@@ -111,4 +80,23 @@ function getByManufacturer(req, res, next) {
     productService.getByManufacturer(query)
         .then(product => product ? res.json(product) : res.sendStatus(404))
         .catch(err => next(err));
+}
+
+function updateProduct(req, res, next) {
+    productService.update(req.body)
+        .then(productData => {
+            res.json(productData);
+        })
+        .catch(err=> {
+            console.log(err);
+
+            let error_data = [];
+            for(data in err.errors) {
+                error_data.push(
+                    err.errors[data]
+                )
+            }
+
+            return res.status(400).send({message: error_data})
+        })
 }

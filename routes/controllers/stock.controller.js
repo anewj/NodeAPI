@@ -7,6 +7,7 @@ var fs = require('fs');
 
 // routes
 router.post('/', insertStock);
+router.post('/update', update);
 router.get('/', getAllStocks);
 router.get('/:id', getById);
 
@@ -20,6 +21,12 @@ function getAllStocks(req, res, next) {
 
 function insertStock(req, res, next) {
     stockService.create(req.body)
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+
+function update(req, res, next) {
+    stockService.update(req.body)
         .then(data => res.json(data))
         .catch(err => next(err));
 }

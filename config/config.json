@@ -1,5 +1,5 @@
 {
-  "connectionString": "mongodb://localhost/billingSystem",
+  "connectionString": "mongodb://localhost/erp",
   "secret": "SECRET MESSAGE",
   "superAdmin": "pasdn389asd*h&h9hJWU8"
 }
