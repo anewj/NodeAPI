@@ -17,7 +17,11 @@ To run,
 **npm run** (production environment)
 
 **Insert roles:** 
-db.roles.insertMany([{ role: "Admin", code: "admin" },{ role: "Super Admin", code: "super_admin" },{ role: "user", code: "user" }])
+1. Open terminal and access mongoDB.
+2. Use database 
+  - use erp;
+3. Insert roles
+  - db.roles.insertMany([{ role: "Admin", code: "admin" },{ role: "Super Admin", code: "super_admin" },{ role: "user", code: "user" }])
 
 **Add user:** 
 To add Super User, add superAdmin value which is in config.json in request as pw.
