@@ -23,6 +23,7 @@ const vendorRouter = require('./routes/controllers/vendor.controller');
 const partyRouter = require('./routes/controllers/party.controller');
 const stock_locationRouter = require('./routes/controllers/stock_location.controller');
 const user_settingsRouter = require('./routes/controllers/user_settings.controller');
+const company_settingsRouter = require('./routes/controllers/company_settings.controller');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -56,6 +57,8 @@ app.use('/vendor',vendorRouter);
 app.use('/party',partyRouter);
 app.use('/stock_location',stock_locationRouter);
 app.use('/user_settings',user_settingsRouter);
+app.use('/user_settings',user_settingsRouter);
+app.use('/company_settings',company_settingsRouter);
 
 //API Error Handler
 app.use(errorHandler);
