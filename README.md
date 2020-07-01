@@ -8,7 +8,7 @@ This NodeJS API uses JWT(JSON based Token) to secure API.
 **Create a DB in MongoDB named "billingSystem"**
 ------------
 
-Requirements: NPM, NODE
+Requirements: NPM(6.x.x), NODE (13.1.x)
 
 After cloning, install dependencies by running, npm install
 
