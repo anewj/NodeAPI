@@ -23,4 +23,7 @@ module.exports = {
     StockLocation: require('../db/models/stock_location.model'),
     UserSettings: require('../db/models/user_settings.model'),
     CompanySettings: require('../db/models/company_settings.model'),
+    InvoiceNumber: require('../db/models/tax_invoice_counter.model'),
+    Invoice: require('../db/models/tax_invoice.model'),
+    InvoiceDump: require('../db/models/invoice_dump.model'),
 };
