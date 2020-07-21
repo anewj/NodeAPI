@@ -26,4 +26,5 @@ module.exports = {
     InvoiceNumber: require('../db/models/tax_invoice_counter.model'),
     Invoice: require('../db/models/tax_invoice.model'),
     InvoiceDump: require('../db/models/invoice_dump.model'),
+    SalesDetail: require('../db/models/sales_detail.model'),
 };

@@ -5,6 +5,7 @@ const InvoiceNumber = db.InvoiceNumber;
 const InvoiceDump = db.InvoiceDump;
 const Counter = require('../db/models/tax_invoice_counter.model');
 const Stock = require('../db/models/stock.model');
+const SalesDetail = db.SalesDetail;
 
 module.exports = {
     create,
@@ -14,7 +15,6 @@ module.exports = {
 
 async function create(invoiceParams) {
     const invoiceDump = new InvoiceDump(invoiceParams);
-
     return await new Promise((resolve, reject) => {
         invoiceDump.save().then(result => {
                 invoiceParams.invoiceDumpRef = result._id;
@@ -25,11 +25,22 @@ async function create(invoiceParams) {
                         Stock.findOneAndUpdate(
                             {"product_id": item.item._id},
                             {$inc: {availableQuantity: -item.stockDeduct}})
-                            .then(res => stockUpdateCounter++)
+                            .then(res => {
+                                stockUpdateCounter++
+                            })
                             .catch(err => reject(err)
                             );
                         if (Object.is(array.length - 1, index)) {
-                            resolve(finalResult);
+                            let saleDetailJson = invoiceParams.purchasedItems;
+                            saleDetailJson.invoiceDumpRef = result._id;
+                            const salesDetail = new SalesDetail(saleDetailJson);
+                            salesDetail.save().then(detail => {
+                                let respJson = {};
+                                respJson.invoice = finalResult;
+                                respJson.saleDetail =detail;
+                                resolve(respJson);
+
+                            })
                         }
                     })
                 }).catch(finalError => reject(finalError))
@@ -49,7 +60,7 @@ async function create(invoiceParams) {
 }
 
 async function getAll() {
-    return await Invoice.find();
+    return await Invoice.find().sort([['date', -1]]);
 }
 
 async function getInvoiceNumber() {
