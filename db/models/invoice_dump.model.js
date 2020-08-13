@@ -82,14 +82,17 @@ const invoiceDump = new Schema({
         totalAfterDiscountAmount: {type: String},
         fTotal: {type: String},
         roundOff: {type: String},
-        tenderAmount: {type: String},
-        chequeDetail: {
-            amount: {type: String},
-            number: {type: String},
-            acHolder: {type: String},
-            bankName: {type: String},
-            date: {type: String}
-        }
+        payment: {
+            tenderAmount: {type: String},
+            change: {type: Number},
+            chequeDetail: {
+                amount: {type: String},
+                number: {type: String},
+                acHolder: {type: String},
+                bankName: {type: String},
+                date: {type: String}
+            },
+        },
     },
     creditSale: {type: Boolean},
     createdDate: {type: Date, default: Date.now},

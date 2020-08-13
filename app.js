@@ -25,6 +25,7 @@ const stock_locationRouter = require('./routes/controllers/stock_location.contro
 const user_settingsRouter = require('./routes/controllers/user_settings.controller');
 const company_settingsRouter = require('./routes/controllers/company_settings.controller');
 const invoiceRouter = require('./routes/controllers/invoice.controller');
+const dailyAccountRouter = require('./routes/controllers/daily_account.controller');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -61,6 +62,7 @@ app.use('/user_settings',user_settingsRouter);
 app.use('/user_settings',user_settingsRouter);
 app.use('/company_settings',company_settingsRouter);
 app.use('/invoice',invoiceRouter);
+app.use('/dailyAccount',dailyAccountRouter);
 
 //API Error Handler
 app.use(errorHandler);

@@ -6,7 +6,8 @@ const InvoiceDump = db.InvoiceDump;
 const Counter = require('../db/models/tax_invoice_counter.model');
 const Stock = require('../db/models/stock.model');
 const SalesDetail = db.SalesDetail;
-
+const DailyAccount = db.DailyAccount;
+const dailyAccountService = require('./daily_account.service');
 module.exports = {
     create,
     getAll,
@@ -35,11 +36,27 @@ async function create(invoiceParams) {
                             saleDetailJson.invoiceDumpRef = result._id;
                             const salesDetail = new SalesDetail(saleDetailJson);
                             salesDetail.save().then(detail => {
-                                let respJson = {};
-                                respJson.invoice = finalResult;
-                                respJson.saleDetail =detail;
-                                resolve(respJson);
+                                let dailyAccountPostJson = {
+                                    cashInCounter: parseFloat(invoiceParams.purchasedItems.payment.tenderAmount).toFixed(2) -
+                                        parseFloat(invoiceParams.purchasedItems.payment.change).toFixed(2)
+                                };
+                                // const dailyAccount = new DailyAccount(dailyAccountPostJson);
+                                // dailyAccountService.create(dailyAccountPostJson).then(dailyAccVal => {
+                                //     let respJson = {};
+                                //     respJson.invoice = finalResult;
+                                //     respJson.saleDetail =detail;
+                                //     respJson.dailyAccount = dailyAccVal;
+                                //     resolve(respJson);
+                                // }).catch(dailyAccErr => {
+                                //     reject (dailyAccErr);
+                                // })
 
+                                let respJson = {};
+                                    respJson.invoice = finalResult;
+                                    respJson.saleDetail = detail;
+                                    resolve(respJson);
+                            }).catch(saleDetailErr => {
+                                reject (saleDetailErr);
                             })
                         }
                     })
