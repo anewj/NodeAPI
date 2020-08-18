@@ -12,6 +12,8 @@ module.exports = {
     create,
     getAll,
     getInvoiceNumber,
+    getInvoiceByNumber,
+    getInvoiceDumpByNumber
 };
 
 async function create(invoiceParams) {
@@ -82,4 +84,12 @@ async function getAll() {
 
 async function getInvoiceNumber() {
     return await InvoiceNumber.findById(config.autoIncrementID);
+}
+
+async function getInvoiceByNumber(invoiceNumber) {
+    return await Invoice.findOne({invoiceNumber: invoiceNumber})
+}
+
+async function getInvoiceDumpByNumber(invoiceNumber) {
+    return await InvoiceDump.findOne({invoiceNumber: invoiceNumber})
 }

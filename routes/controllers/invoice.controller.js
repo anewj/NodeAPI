@@ -8,7 +8,9 @@ var fs = require('fs');
 // routes
 router.post('/', saveInvoice);
 router.get('/', getAllInvoices);
-router.get('/invoiceNumber', getInvoiceNumber);
+router.get('/number', getInvoiceNumber);
+router.get('/number/:invoiceNumber', getInvoiceByNumber);
+router.get('/dump/number/:invoiceNumber', getInvoiceDumpByNumber);
 // router.get('/:id', getByUserId);
 
 module.exports = router;
@@ -26,6 +28,16 @@ function saveInvoice(req, res, next) {
 }
 function getInvoiceNumber(req, res, next) {
     invoiceService.getInvoiceNumber()
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+function getInvoiceByNumber(req, res, next) {
+    invoiceService.getInvoiceByNumber(req.params.invoiceNumber)
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+function getInvoiceDumpByNumber(req, res, next) {
+    invoiceService.getInvoiceDumpByNumber(req.params.invoiceNumber)
         .then(data => res.json(data))
         .catch(err => next(err));
 }
