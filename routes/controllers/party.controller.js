@@ -18,10 +18,16 @@ function getAllParty(req, res, next) {
         .catch(err => next(err));
 }
 
-function insertParty(req, res, next) {
+function insertParty(req, res, error) {
     partyService.create(req.body)
         .then(data => res.json(data))
-        .catch(err => next(err));
+        .catch(err => {
+            const json = {
+                status: 400,
+                message: err
+            }
+            error(json);
+        });
 }
 
 function getById(req, res, next) {

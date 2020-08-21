@@ -4,7 +4,7 @@ const InvoiceDump = db.InvoiceDump;
 var moment = require('moment');
 
 module.exports = {
-    create,
+    update,
     getTodaySale,
     // getInvoiceNumber,
     getLastDay
@@ -50,28 +50,29 @@ module.exports = {
 //     })
 // }
 
-async function create(params) {
-    const dateToday = moment().startOf('day').valueOf();
+// params.cashReceived = undefined;
 
+async function update(params) {
+    const dateToday = moment().startOf('day').valueOf();
     return await new Promise((resolve, reject) => {
         DailyAccount.findOneAndUpdate({'createdDate': dateToday}, {
             $inc: {
-                cashInCounter: params.cashInCounter,
-                openingCash: params.openingCash
+                cashInCounter: params.cashReceived
             }
-        }).then(res => {
-                if (res)
+        }, {new: true}).then(res => {
+                if (res) {
+                    console.log(res);
                     resolve(res);
-                else {
-                    DailyAccount.find().sort({ $natural: -1 }).limit(1).then(lastDay => {
-                        console.log('lastDay ' + lastDay[0]);
-                        const lastDayRec = lastDay[0];
-                        if (lastDay.length === 1) {
-                            params.openingCash = parseFloat(params.cashInCounter) + parseFloat(lastDayRec.cashInCounter)
-                        }
-                        params.updatedDate = new Date();
-                        params.createdDate = dateToday;
-                        const dailyAccount = new DailyAccount(params);
+                } else {
+                    DailyAccount.findOne().sort({$natural: -1}).limit(1).then(lastDay => {
+                        let lastDayRec = {};
+                        if (lastDay)
+                            lastDayRec = lastDay;
+                        const dailyAccount = new DailyAccount();
+                        dailyAccount.updatedDate = moment();
+                        dailyAccount.createdDate = dateToday;
+                        dailyAccount.openingCash = Number(lastDayRec?.cashInCounter ? lastDayRec.cashInCounter : 0);
+                        dailyAccount.cashInCounter = Number(params.cashReceived) + Number(lastDayRec?.cashInCounter ? lastDayRec.cashInCounter : 0);
                         dailyAccount.save().then(val => resolve(val)).catch(err => {
                                 console.log('dailyAccount : save error' + err);
                                 reject(err)
@@ -106,10 +107,10 @@ async function create(params) {
 async function getTodaySale() {
     const todayStart = moment().startOf('day').toDate();
     const todayEnd = moment().endOf('day').toDate();
-    const yesterdayStart = moment().subtract(1,'day').startOf('day').toDate();
-    const yesterdayEnd = moment().subtract(1,'day').endOf('day').toDate();
-    const tomorrowStart = moment().add(1,'day').startOf('day').toDate();
-    const tomorrowEnd = moment().add(1,'day').endOf('day').toDate();
+    const yesterdayStart = moment().subtract(1, 'day').startOf('day').toDate();
+    const yesterdayEnd = moment().subtract(1, 'day').endOf('day').toDate();
+    const tomorrowStart = moment().add(1, 'day').startOf('day').toDate();
+    const tomorrowEnd = moment().add(1, 'day').endOf('day').toDate();
     console.log(todayStart);
     console.log(todayEnd);
     const dateFilter = {createdDate: {$gte: todayStart, $lte: todayEnd}};
@@ -135,7 +136,7 @@ async function getTodaySale() {
 }
 
 async function getLastDay() {
-    return await DailyAccount.find().sort({ $natural: -1 }).limit(1);
+    return await DailyAccount.findOne().sort({$natural: -1}).limit(1);
 
     // return await Invoice.find().sort([['date', -1]]);
 }

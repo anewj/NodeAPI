@@ -15,8 +15,14 @@ async function create(partyParam) {
 
     // console.log(productParam)
     // product._id = new mongoose.Types.ObjectId();
-    await party.save();
-    return party;
+    const promise = new Promise((resolve, reject) => {
+        party.save().then(record => {
+            resolve (record)
+        }).catch(err => {
+            reject (err);
+        });
+    });
+    return await promise;
 }
 
 async function getAll() {

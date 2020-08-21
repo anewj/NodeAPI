@@ -8,6 +8,7 @@ var fs = require('fs');
 // routes
 router.get('/todaySales', getTodaySales);
 router.get('/lastDay', getLastDay);
+router.put('/updateCash', saveCashReceived);
 // router.get('/invoiceNumber', getInvoiceNumber);
 // router.get('/:id', getByUserId);
 
@@ -26,6 +27,11 @@ function getInvoiceNumber(req, res, next) {
 }
 function getLastDay(req, res, next) {
     dailyAccountService.getLastDay()
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+function saveCashReceived(req, res, next) {
+    dailyAccountService.update(req.body)
         .then(data => res.json(data))
         .catch(err => next(err));
 }

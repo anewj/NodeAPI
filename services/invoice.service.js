@@ -16,6 +16,11 @@ module.exports = {
     getInvoiceDumpByNumber
 };
 
+/**
+ * Saves invoice dump then saves invoice and updates cash in counter.
+ * @param invoiceParams - Invoice details json
+ * @returns {Promise<unknown>} json data
+ */
 async function create(invoiceParams) {
     const invoiceDump = new InvoiceDump(invoiceParams);
     return await new Promise((resolve, reject) => {
@@ -38,27 +43,23 @@ async function create(invoiceParams) {
                             saleDetailJson.invoiceDumpRef = result._id;
                             const salesDetail = new SalesDetail(saleDetailJson);
                             salesDetail.save().then(detail => {
-                                let dailyAccountPostJson = {
-                                    cashInCounter: parseFloat(invoiceParams.purchasedItems.payment.tenderAmount).toFixed(2) -
-                                        parseFloat(invoiceParams.purchasedItems.payment.change).toFixed(2)
+                                let cashReceivedJson = {
+                                    cashReceived: Number(invoiceParams.purchasedItems.payment.tenderAmount) -
+                                        Number(invoiceParams.purchasedItems.payment.change)
                                 };
-                                // const dailyAccount = new DailyAccount(dailyAccountPostJson);
-                                // dailyAccountService.create(dailyAccountPostJson).then(dailyAccVal => {
-                                //     let respJson = {};
-                                //     respJson.invoice = finalResult;
-                                //     respJson.saleDetail =detail;
-                                //     respJson.dailyAccount = dailyAccVal;
-                                //     resolve(respJson);
-                                // }).catch(dailyAccErr => {
-                                //     reject (dailyAccErr);
-                                // })
-
                                 let respJson = {};
-                                    respJson.invoice = finalResult;
-                                    respJson.saleDetail = detail;
+                                respJson.invoice = finalResult;
+                                respJson.saleDetail = detail;
+                                dailyAccountService.update(cashReceivedJson).then(cashReceivedSuccess => {
+                                    respJson.cashReceived = cashReceivedSuccess;
                                     resolve(respJson);
+                                }).catch(err => {
+                                    respJson.cashReceived = err;
+                                    resolve(respJson);
+                                })
+
                             }).catch(saleDetailErr => {
-                                reject (saleDetailErr);
+                                reject(saleDetailErr);
                             })
                         }
                     })
