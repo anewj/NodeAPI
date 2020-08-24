@@ -28,4 +28,5 @@ module.exports = {
     InvoiceDump: require('../db/models/invoice_dump.model'),
     SalesDetail: require('../db/models/sales_detail.model'),
     DailyAccount: require('../db/models/daily_account.model'),
+    Cheque: require('../db/models/cheque.model'),
 };

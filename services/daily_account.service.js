@@ -2,55 +2,19 @@ const db = require('../_helpers/db');
 const DailyAccount = db.DailyAccount;
 const InvoiceDump = db.InvoiceDump;
 var moment = require('moment');
+const {
+    Decimal128
+} = require('mongodb');
 
 module.exports = {
     update,
     getTodaySale,
     // getInvoiceNumber,
-    getLastDay
+    getLastDay,
+    creditSale,
+    creditSaleByGroup,
+    creditSaleByCustomerId
 };
-
-// async function create(params) {
-//     const dateToday = moment().startOf('day').valueOf();
-//     return await new Promise((resolve, reject) => {
-//         DailyAccount.findOneAndUpdate({'createdDate': dateToday}, {
-//             $inc: {
-//                 cashInCounter: params.cashInCounter,
-//                 openingCash: params.openingCash
-//             }
-//         }).then(res => {
-//                 if (res)
-//                     resolve(res);
-//                 else {
-//                     const yesterday = moment().subtract(1, 'day').startOf('day').valueOf();
-//                     DailyAccount.findOne({'createdDate': yesterday}).then(yesterday => {
-//                         console.log('yesterday ' + yesterday);
-//                         if (yesterday) {
-//                             params.openingCash = parseFloat(params.cashInCounter) + parseFloat(yesterday.cashInCounter)
-//                         }
-//                         params.updatedDate = new Date();
-//                         params.createdDate = dateToday;
-//                         const dailyAccount = new DailyAccount(params);
-//                         dailyAccount.save().then(val => resolve(val)).catch(err => {
-//                                 console.log('dailyAccount : save error' + err);
-//                                 reject(err)
-//                                 // if (err.keyPattern.hasOwnProperty('createdDate') &&
-//                                 //     new Date(err.keyValue.createdDate).toLocaleString() === new Date(dateOnlyToday).toLocaleString()) {
-//                                 //     reject(err)
-//                                 // }
-//                             }
-//                         );
-//                     }).catch(yesterdayError => reject(yesterdayError));
-//                 }
-//             }
-//         ).catch(err => {
-//             console.log('dailyAccount : findOneAndUpdate error' + err);
-//             reject(err)
-//         });
-//     })
-// }
-
-// params.cashReceived = undefined;
 
 async function update(params) {
     const dateToday = moment().startOf('day').valueOf();
@@ -144,3 +108,71 @@ async function getLastDay() {
 // async function getInvoiceNumber() {
 //     return await InvoiceNumber.findById(config.autoIncrementID);
 // }
+
+async function creditSale(params) {
+    const todayStart = moment().startOf('day').toDate();
+    const todayEnd = moment().endOf('day').toDate();
+
+    return await InvoiceDump.find({creditSale: true})
+}
+
+async function creditSaleByGroup() {
+    const todayStart = moment().startOf('day').toDate();
+    const todayEnd = moment().endOf('day').toDate();
+    return await InvoiceDump.aggregate([
+        {
+            '$match': {
+                'creditSale': true
+            }
+        }, {
+            '$set': {
+                'purchasedItems.payment.tenderAmount': {
+                    '$convert': {
+                        'input': '$purchasedItems.payment.tenderAmount',
+                        'to': 'decimal',
+                        'onError': Decimal128.fromString('0'),
+                        'onNull': Decimal128.fromString('0')
+                    }
+                },
+                'purchasedItems.fTotal': {
+                    '$toDecimal': '$purchasedItems.fTotal'
+                },
+                'purchasedItems.payment.chequeDetail.amount': {
+                    '$convert': {
+                        'input': '$purchasedItems.payment.chequeDetail.amount',
+                        'to': 'decimal',
+                        'onError': Decimal128.fromString('0'),
+                        'onNull': Decimal128.fromString('0')
+                    }
+                }
+            }
+        }, {
+            '$group': {
+                '_id': {
+                    'customerID': '$partyInformation._id',
+                    'name': '$partyInformation.name',
+                    'contactNumber': '$partyInformation.contactNumber'
+                },
+                'count': {
+                    '$sum': 1
+                },
+                'creditAmount': {
+                    '$sum': {
+                        '$subtract': [
+                            '$purchasedItems.fTotal', {
+                                '$add': [
+                                    '$purchasedItems.payment.chequeDetail.amount', '$purchasedItems.payment.tenderAmount'
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ])
+}
+
+async function creditSaleByCustomerId(id) {
+    return await InvoiceDump.find({creditSale: true, 'partyInformation._id': id})
+
+}

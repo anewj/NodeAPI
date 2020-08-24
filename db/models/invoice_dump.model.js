@@ -90,7 +90,8 @@ const invoiceDump = new Schema({
                 number: {type: String},
                 acHolder: {type: String},
                 bankName: {type: String},
-                date: {type: String}
+                date: {type: String},
+                isMiti: {type: Boolean}
             },
         },
     },

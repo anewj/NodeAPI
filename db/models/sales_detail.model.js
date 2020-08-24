@@ -3,16 +3,18 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
     invoiceDumpRef: {type: Schema.Types.ObjectId, ref: 'InvoiceDump', required: true},
-    gTotal: {type: String},
-    roundOff: {type: String},
-    fTotal: {type: String},
-    tenderAmount: {type: String},
-    chequeDetail: {
-        amount: {type: String},
-        number: {type: String},
-        acHolder: {type: String},
-        bankName: {type: String},
-        date: {type: String}
+    invoiceNumber: {type: String, required: true},
+    payment: {
+        tenderAmount: {type: String},
+        change: {type: Number},
+        chequeDetail: {
+            amount: {type: String},
+            number: {type: String},
+            acHolder: {type: String},
+            bankName: {type: String},
+            date: {type: String},
+            isMiti: {type: Boolean}
+        },
     },
     createdDate: {type: Date, default: Date.now},
     updatedDate: {type: Date, default: Date.now}

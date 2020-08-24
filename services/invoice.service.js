@@ -7,7 +7,9 @@ const Counter = require('../db/models/tax_invoice_counter.model');
 const Stock = require('../db/models/stock.model');
 const SalesDetail = db.SalesDetail;
 const DailyAccount = db.DailyAccount;
+const Cheque = db.Cheque;
 const dailyAccountService = require('./daily_account.service');
+const chequeService = require('./cheque.service');
 module.exports = {
     create,
     getAll,
@@ -17,65 +19,132 @@ module.exports = {
 };
 
 /**
- * Saves invoice dump then saves invoice and updates cash in counter.
+ * Saves invoice dump > saves invoice > Updates Stock >Saves Sales Details > Saves Cheque if there is one > Increase Cash in counter
+ * If invoice dump save fails, deduct the invoice number.
  * @param invoiceParams - Invoice details json
- * @returns {Promise<unknown>} json data
+ * @returns {Promise<unknown>} json data containing all the outputs and errors
  */
 async function create(invoiceParams) {
     const invoiceDump = new InvoiceDump(invoiceParams);
+    const valid = invoiceParams.creditSale ? !!invoiceParams.partyInformation?._id : true;
     return await new Promise((resolve, reject) => {
-        invoiceDump.save().then(result => {
-                invoiceParams.invoiceDumpRef = result._id;
-                const invoice = new Invoice(invoiceParams);
-                invoice.save().then(finalResult => {
-                    let stockUpdateCounter = 0;
-                    invoiceParams.purchasedItems.items.forEach((item, index, array) => {
-                        Stock.findOneAndUpdate(
-                            {"product_id": item.item._id},
-                            {$inc: {availableQuantity: -item.stockDeduct}})
-                            .then(res => {
-                                stockUpdateCounter++
-                            })
-                            .catch(err => reject(err)
-                            );
-                        if (Object.is(array.length - 1, index)) {
-                            let saleDetailJson = invoiceParams.purchasedItems;
-                            saleDetailJson.invoiceDumpRef = result._id;
-                            const salesDetail = new SalesDetail(saleDetailJson);
-                            salesDetail.save().then(detail => {
-                                let cashReceivedJson = {
-                                    cashReceived: Number(invoiceParams.purchasedItems.payment.tenderAmount) -
-                                        Number(invoiceParams.purchasedItems.payment.change)
-                                };
-                                let respJson = {};
-                                respJson.invoice = finalResult;
-                                respJson.saleDetail = detail;
-                                dailyAccountService.update(cashReceivedJson).then(cashReceivedSuccess => {
-                                    respJson.cashReceived = cashReceivedSuccess;
-                                    resolve(respJson);
-                                }).catch(err => {
-                                    respJson.cashReceived = err;
-                                    resolve(respJson);
-                                })
-
-                            }).catch(saleDetailErr => {
-                                reject(saleDetailErr);
-                            })
-                        }
-                    })
-                }).catch(finalError => reject(finalError))
-            }
-        ).catch(err => {
+        if (valid) {
             /**
-             * Deduct invoice counter which was increased by pre function
+             * Save Invoice Dump
              */
-            Counter.findOneAndUpdate({_id: config.autoIncrementID}, {$inc: {counter: -1}}, function (error, counter) {
-                if (error) {
-                    reject(error);
+            invoiceDump.save().then(result => {
+                    invoiceParams.invoiceDumpRef = result._id;
+                    const invoice = new Invoice(invoiceParams);
+
+                    /**
+                     * Save Invoice
+                     */
+                    invoice.save().then(finalResult => {
+                        let stockUpdateCounter = 0;
+                        invoiceParams.purchasedItems.items.forEach((item, index, array) => {
+                            /**
+                             * Update Stock
+                             */
+                            Stock.findOneAndUpdate(
+                                {"product_id": item.item._id},
+                                {$inc: {availableQuantity: -item.stockDeduct}})
+                                .then(res => {
+                                    console.log("stock update success");
+                                })
+                                .catch(err => {
+                                        console.log("stock update fail");
+                                        reject(err)
+                                    }
+                                );
+
+                            if (Object.is(array.length - 1, index)) {
+                                try {
+                                    let salesDetail = new SalesDetail();
+                                    salesDetail.invoiceDumpRef = result._id;
+                                    salesDetail.invoiceNumber = result.invoiceNumber;
+                                    salesDetail.payment = result.purchasedItems.payment;
+                                    /**
+                                     * Save SalesDetail
+                                     */
+                                    salesDetail.save().then(detail => {
+                                        try {
+                                            let cashReceivedJson = {
+                                                cashReceived: Number(invoiceParams.purchasedItems.payment.tenderAmount) -
+                                                    Number(invoiceParams.purchasedItems.payment.change)
+                                            };
+                                            let respJson = {};
+                                            respJson.invoice = finalResult;
+                                            respJson.saleDetail = detail;
+
+                                            let chequeCheck = new Promise((resolve1, reject1) => {
+                                                if (Number(invoiceParams.purchasedItems?.payment?.chequeDetail?.amount) > 0) {
+                                                    chequeParams = {
+                                                        customerID: invoiceParams.partyInformation._id,
+                                                        InvoiceNumber: invoiceParams.invoiceNumber,
+                                                        InvoiceId: invoiceParams.invoiceDumpRef.toString(),
+                                                        amount: invoiceParams.purchasedItems.payment.chequeDetail.amount,
+                                                        number: invoiceParams.purchasedItems.payment.chequeDetail.number,
+                                                        acName: invoiceParams.purchasedItems.payment.chequeDetail.acHolder,
+                                                        bankName: invoiceParams.purchasedItems.payment.chequeDetail.bankName,
+                                                        date: invoiceParams.purchasedItems.payment.chequeDetail.date
+                                                    };
+                                                    /** Cheque Not required.
+                                                     * Save cheque
+                                                     */
+                                                    chequeService.saveCheque(chequeParams).then(chequeSuccess => {
+                                                        respJson.chequeSave = chequeSuccess;
+                                                        resolve1(respJson)
+                                                    }).catch(err => {
+                                                        respJson.chequeSave = err;
+                                                        reject1(respJson);
+                                                    });
+                                                } else {
+                                                    respJson.chequeSave = null;
+                                                    resolve1(respJson);
+                                                }
+                                            });
+
+                                            /**
+                                             * After check
+                                             */
+                                            chequeCheck.then(resp => {
+                                                /**
+                                                 * Increase cash received
+                                                 */
+                                                dailyAccountService.update(cashReceivedJson).then(cashReceivedSuccess => {
+                                                    resp.cashReceived = cashReceivedSuccess;
+                                                    resolve(respJson);
+                                                }).catch(err => reject(respJson))
+                                            }).catch(err => reject(err))
+                                        } catch (e) {
+                                            console.log('inside save detail save')
+                                            console.log(e)
+                                        }
+
+                                    }).catch(saleDetailErr => {
+                                        console.log('sale detail save fail' + saleDetailErr);
+                                        reject(saleDetailErr)
+                                    })
+                                } catch (e) {
+                                    console.log(e)
+                                    console.log(result)
+                                }
+                            }
+                        })
+                    }).catch(finalError => reject(finalError))
                 }
-                reject(err)
-            })
-        });
+            ).catch(err => {
+                /**
+                 * Deduct invoice counter which was increased by pre function
+                 */
+                Counter.findOneAndUpdate({_id: config.autoIncrementID}, {$inc: {counter: -1}}, function (error, counter) {
+                    if (error) reject(error);
+                    reject(err);
+                })
+            });
+        } else {
+            reject('Customer name must be specified when sale is credit.');
+        }
     });
 }
 

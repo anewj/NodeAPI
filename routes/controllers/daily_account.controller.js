@@ -9,6 +9,9 @@ var fs = require('fs');
 router.get('/todaySales', getTodaySales);
 router.get('/lastDay', getLastDay);
 router.put('/updateCash', saveCashReceived);
+router.get('/creditRemaining',creditRemaining);
+router.get('/creditRemaining/group',creditSaleByGroup);
+router.get('/creditRemaining/:id',creditSaleById);
 // router.get('/invoiceNumber', getInvoiceNumber);
 // router.get('/:id', getByUserId);
 
@@ -32,6 +35,24 @@ function getLastDay(req, res, next) {
 }
 function saveCashReceived(req, res, next) {
     dailyAccountService.update(req.body)
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+
+function creditRemaining(req, res, next) {
+    dailyAccountService.creditSale(req.body)
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+
+function creditSaleByGroup(req, res, next) {
+    dailyAccountService.creditSaleByGroup(req.body)
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+
+function creditSaleById(req, res, next) {
+    dailyAccountService.creditSaleByCustomerId(req.params.id)
         .then(data => res.json(data))
         .catch(err => next(err));
 }
