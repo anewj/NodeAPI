@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const schema = new Schema({
     invoiceDumpRef: {type: Schema.Types.ObjectId, ref: 'InvoiceDump', required: true},
     invoiceNumber: {type: String, required: true},
+    customer: {type: Schema.Types.ObjectId, ref: 'Party', required: true},
     payment: {
         tenderAmount: {type: String},
         change: {type: Number},

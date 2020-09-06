@@ -20,7 +20,7 @@
     "lodash": ">=4.17.13",
     "moment": "^2.27.0",
     "mongodb": "^3.2.7",
-    "mongoose": "^5.1.4",
+    "mongoose": "^5.10.2",
     "morgan": "~1.9.1",
     "observe": "^1.4.1",
     "rootpath": "^0.1.2"

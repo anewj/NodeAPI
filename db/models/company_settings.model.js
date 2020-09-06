@@ -3,22 +3,30 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
     information: {
-        name: {type: String, required: true},
-        address: {type: String, required: true},
-        contactNumber: [{number: {type: Number, required: true}}],
-        faxNumber: {type: Number, required: true},
-        emailAddress: {type: String, required: true},
-        website: {type: String, required: true}
+        name: {type: String},
+        address: {type: String},
+        contactNumber: [{number: {type: Number}}],
+        faxNumber: {type: Number},
+        emailAddress: {type: String},
+        website: {type: String}
     },
     registrationInfo: {
-        type: {type: String, required: true, default: 'NONE'},
-        vat_panNumber: {type: Number, required: true}
+        type: {type: String, default: 'NONE'},
+        vat_panNumber: {type: Number}
     },
     invoiceNumberSettings: {
-        prefix: {type: String, required: true},
-        digits: {type:  Number, required: true},
+        prefix: {type: String},
+        digits: {type:  Number},
     },
-    vatPercentage: {type: Number, required: true, default: 13},
+    vatPercentage: {type: Number, default: 13},
+    bankAccounts: [
+        {
+            bankName: {type: String},
+            branch: {type: String},
+            accountName: {type: String},
+            accountNumber: {type: String}
+        }
+    ],
     createdDate: {type: Date, default: Date.now},
     updatedDate: {type: Date, default: Date.now}
 });

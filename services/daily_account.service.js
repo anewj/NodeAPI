@@ -2,6 +2,8 @@ const db = require('../_helpers/db');
 const DailyAccount = db.DailyAccount;
 const InvoiceDump = db.InvoiceDump;
 var moment = require('moment');
+const mongoose = require('mongoose');
+
 const {
     Decimal128
 } = require('mongodb');
@@ -13,7 +15,8 @@ module.exports = {
     getLastDay,
     creditSale,
     creditSaleByGroup,
-    creditSaleByCustomerId
+    creditSaleByCustomerId,
+    getCustomerActivity
 };
 
 async function update(params) {
@@ -174,5 +177,115 @@ async function creditSaleByGroup() {
 
 async function creditSaleByCustomerId(id) {
     return await InvoiceDump.find({creditSale: true, 'partyInformation._id': id})
+}
 
+async function getCustomerActivity(req) {
+    try {
+        let customerID = mongoose.Types.ObjectId(req.params.id);
+        let queries = [
+            {
+                '$match': {
+                    'partyInformation._id': customerID
+                }
+            }, {
+                '$set': {
+                    'purchasedItems.payment.tenderAmount': nullToZero('$purchasedItems.payment.tenderAmount'),
+                    'purchasedItems.fTotal': {
+                        '$toDecimal': '$purchasedItems.fTotal'
+                    },
+                    'purchasedItems.gTotal': {
+                        '$toDecimal': '$purchasedItems.gTotal'
+                    },
+                    'purchasedItems.roundOff': nullToZero('$purchasedItems.roundOff'),
+                    'purchasedItems.payment.chequeDetail.amount': nullToZero('$purchasedItems.payment.chequeDetail.amount'),
+                }
+            }, {
+                '$group': {
+                    '_id': {
+                        'customerID': '$partyInformation._id',
+                        'name': '$partyInformation.name'
+                    },
+                    'count': {
+                        '$sum': 1
+                    },
+                    'totalPurchasedAmount': {
+                        '$sum': '$purchasedItems.gTotal'
+                    },
+                    'totalAdjustment': {
+                        '$sum': '$purchasedItems.roundOff'
+                    },
+                    'totalPayableAmount': {
+                        '$sum': '$purchasedItems.fTotal'
+                    },
+                    'totalAmountPaid': {
+                        '$sum': totalAmountPaid()
+                    },
+                    'creditAmount': {
+                        '$sum': {
+                            '$subtract': [
+                                '$purchasedItems.fTotal',
+                                totalAmountPaid()
+                            ]
+                        }
+                    }
+                }
+            }, {
+                '$lookup': {
+                    'from': 'invoicedumps',
+                    'localField': '_id.customerID',
+                    'foreignField': 'partyInformation._id',
+                    'as': 'invoices'
+                }
+            }
+        ];
+        if (req.query?.lookupInvoices?.toLowerCase() !== 'true') {
+            queries.splice(3, 1);
+        }
+        return await InvoiceDump.aggregate(queries).then(data => {
+            const rec = data.map(info => {
+               info.totalPurchasedAmount = parseFloat(info.totalPurchasedAmount);
+               info.totalAdjustment = parseFloat(info.totalAdjustment);
+               info.totalPayableAmount = parseFloat(info.totalPayableAmount);
+               info.totalAmountPaid = parseFloat(info.totalAmountPaid);
+               info.creditAmount = parseFloat(info.creditAmount);
+               return info;
+            });
+            return rec[0];
+        });
+    } catch (e) {
+        console.log(e)
+    }
+
+}
+
+const decimal2JSON = (v, i, prev) => {
+    if (v !== null && typeof v === 'object') {
+        if (v.constructor.name === 'Decimal128')
+            prev[i] = v.toString();
+        else
+            Object.entries(v).forEach(([key, value]) => decimal2JSON(value, key, prev ? prev[i] : v));
+    }
+};
+
+function nullToZero(field) {
+    return {
+        '$convert': {
+            'input': field,
+            'to': 'decimal',
+            'onError': Decimal128.fromString('0'),
+            'onNull': Decimal128.fromString('0')
+        }
+    }
+}
+
+function totalAmountPaid() {
+    return {
+        '$add': [
+            '$purchasedItems.payment.chequeDetail.amount', {
+                '$subtract': [
+                    '$purchasedItems.payment.tenderAmount', '$purchasedItems.payment.change'
+                ]
+            }
+        ]
+    }
 }

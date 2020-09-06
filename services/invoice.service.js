@@ -63,6 +63,7 @@ async function create(invoiceParams) {
                                     salesDetail.invoiceDumpRef = result._id;
                                     salesDetail.invoiceNumber = result.invoiceNumber;
                                     salesDetail.payment = result.purchasedItems.payment;
+                                    salesDetail.customer = result.partyInformation._id;
                                     /**
                                      * Save SalesDetail
                                      */
@@ -153,7 +154,17 @@ async function getAll() {
 }
 
 async function getInvoiceNumber() {
-    return await InvoiceNumber.findById(config.autoIncrementID);
+   return await new Promise((resolve, reject) => {
+       InvoiceNumber.findById(config.autoIncrementID).then(data => {
+           if(!data) {
+               const invNumber = new InvoiceNumber({
+                   _id: config.autoIncrementID,
+                   counter: 1
+               });
+               invNumber.save().then(invSaved => resolve(invSaved)).catch(err => reject(err))
+           } else resolve(data)
+       }).catch(err => reject(err));
+   });
 }
 
 async function getInvoiceByNumber(invoiceNumber) {

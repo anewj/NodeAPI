@@ -12,6 +12,7 @@ router.put('/updateCash', saveCashReceived);
 router.get('/creditRemaining',creditRemaining);
 router.get('/creditRemaining/group',creditSaleByGroup);
 router.get('/creditRemaining/:id',creditSaleById);
+router.get('/account/:id',getCustomerHistory);
 // router.get('/invoiceNumber', getInvoiceNumber);
 // router.get('/:id', getByUserId);
 
@@ -53,6 +54,12 @@ function creditSaleByGroup(req, res, next) {
 
 function creditSaleById(req, res, next) {
     dailyAccountService.creditSaleByCustomerId(req.params.id)
+        .then(data => res.json(data))
+        .catch(err => next(err));
+}
+
+function getCustomerHistory(req, res, next) {
+    dailyAccountService.getCustomerActivity(req)
         .then(data => res.json(data))
         .catch(err => next(err));
 }

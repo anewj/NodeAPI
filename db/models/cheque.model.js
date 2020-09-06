@@ -12,6 +12,10 @@ const schema = new Schema({
     date: {type: String, required: true},
     isMiti: {type: Boolean, required: true, default: true},
     cleared: {type: Boolean, required: true, default: false},
+    clearing: {type: Boolean, required: true, default: false},
+    clearedDate: {type: Date},
+    cash: {type: Boolean, required: true, default: false},
+    depositAccount: {type: Schema.Types.ObjectId, ref: 'InvoiceDump.bankAccounts'},
     bounce: [
         {
             reason: {type: String, required: true},
