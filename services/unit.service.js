@@ -8,6 +8,8 @@ module.exports = {
 };
 async function create(unitParam) {
     // save product
+    unitParam.name = unitParam.name.toUpperCase();
+    unitParam.code = unitParam.code.toUpperCase();
     const unit = new Unit(unitParam);
     await unit.save();
     return unit;

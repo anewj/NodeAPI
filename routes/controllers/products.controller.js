@@ -12,12 +12,15 @@ var fs = require('fs');
 // routes
 router.post('/', newProduct);
 router.get('/', getAllProducts);
-router.get('/:id', getById);
+router.get('/count', getProductsCount);
+router.get('/psf', getByPagingSortingFiltering);
 router.get('/query/:field&:id', getByManufacturer);
 router.get('/preOrder/:preOrder', getProducts);
 router.get('/stock/:id', getStock);
 router.get('/price/:id', getPrice);
+router.get('/:id', getById);
 router.post('/update', updateProduct);
+router.post('/bulk', saveBulkProducts);
 
 module.exports = router;
 
@@ -50,6 +53,17 @@ function newProduct(req, res, next) {
 
 function getProducts(req, res, next) {
     productService.getProduct(req.params.preOrder)
+        .then(product => product ? res.json(product) : res.sendStatus(404))
+        .catch(err => next(err));
+}
+function getProductsCount(req, res, next) {
+    productService.getProductsCount(req.params.preOrder)
+        .then(product => product ? res.json(product) : res.sendStatus(404))
+        .catch(err => next(err));
+}
+
+function getByPagingSortingFiltering(req, res, next) {
+    productService.getByPagingSortingFiltering(req.query)
         .then(product => product ? res.json(product) : res.sendStatus(404))
         .catch(err => next(err));
 }
@@ -89,6 +103,25 @@ function updateProduct(req, res, next) {
         })
         .catch(err=> {
             console.log(err);
+
+            let error_data = [];
+            for(data in err.errors) {
+                error_data.push(
+                    err.errors[data]
+                )
+            }
+
+            return res.status(400).send({message: error_data})
+        })
+}
+
+function saveBulkProducts(req, res, next) {
+    productService.saveBulkProduct(req.body)
+        .then(productData => {
+            res.json(productData);
+        })
+        .catch(err=> {
+            console.log(err)
 
             let error_data = [];
             for(data in err.errors) {

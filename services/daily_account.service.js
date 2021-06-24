@@ -122,7 +122,7 @@ async function creditSale(params) {
 async function creditSaleByGroup() {
     const todayStart = moment().startOf('day').toDate();
     const todayEnd = moment().endOf('day').toDate();
-    return await InvoiceDump.aggregate([
+    return InvoiceDump.aggregate([
         {
             '$match': {
                 'creditSale': true
@@ -172,7 +172,7 @@ async function creditSaleByGroup() {
                 }
             }
         }
-    ])
+    ]);
 }
 
 async function creditSaleByCustomerId(id) {

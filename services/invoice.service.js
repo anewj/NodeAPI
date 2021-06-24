@@ -80,6 +80,7 @@ async function create(invoiceParams) {
                                             let chequeCheck = new Promise((resolve1, reject1) => {
                                                 if (Number(invoiceParams.purchasedItems?.payment?.chequeDetail?.amount) > 0) {
                                                     chequeParams = {
+                                                        isMiti: invoiceParams.purchasedItems.payment.chequeDetail.isMiti,
                                                         customerID: invoiceParams.partyInformation._id,
                                                         InvoiceNumber: invoiceParams.invoiceNumber,
                                                         InvoiceId: invoiceParams.invoiceDumpRef.toString(),

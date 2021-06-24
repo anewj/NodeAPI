@@ -11,7 +11,7 @@
 #CMD ["npm", "start"]
 
 # Create image based on the official Node 6 image from the dockerhub
-FROM node:14.4.0
+FROM node:14-alpine
 
 # Create a directory where our app will be placed
 RUN mkdir -p /usr/src/app

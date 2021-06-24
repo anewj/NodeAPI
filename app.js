@@ -27,6 +27,8 @@ const company_settingsRouter = require('./routes/controllers/company_settings.co
 const invoiceRouter = require('./routes/controllers/invoice.controller');
 const dailyAccountRouter = require('./routes/controllers/daily_account.controller');
 const chequeRouter = require('./routes/controllers/cheque.controller');
+const panNumberRouter = require('./routes/controllers/pan_number.controller');
+const loaderRouter = require('./routes/controllers/loader.controller');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -65,6 +67,8 @@ app.use('/company_settings',company_settingsRouter);
 app.use('/invoice',invoiceRouter);
 app.use('/dailyAccount',dailyAccountRouter);
 app.use('/cheque',chequeRouter);
+app.use('/pan',panNumberRouter);
+app.use('/load',loaderRouter)
 
 //API Error Handler
 app.use(errorHandler);

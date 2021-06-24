@@ -9,9 +9,9 @@ const schema = new Schema({
         position: {type: Number, required: true},
         unit: {type: Schema.Types.ObjectId, ref: 'Unit', required: true},
         rate: {type:Number, required: true},
-        // rateWith1: {type: Number, required:true}
     }],
     vendor: {type: Schema.Types.ObjectId, ref: 'Vendor', required: true},
+    defaultSellingUnit: {type: Schema.Types.ObjectId, ref: 'Unit', required: true},
     createdDate: {type: Date, default: Date.now},
     updatedDate: {type: Date, default: Date.now}
 });

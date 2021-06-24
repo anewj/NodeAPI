@@ -14,6 +14,7 @@ const options = {
 
 const connectWithRetry = () => {
     console.log('MongoDB connection with retry');
+    mongoose.set('useFindAndModify', false);
     mongoose.connect(process.env.MONGODB_URI || config.connectionString, options).then(() => {
         console.log('MongoDB is connected')
     }).catch(err => {

@@ -5,6 +5,7 @@ const schema = new Schema({
     product_id: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
     price: {type: Number, required: true},
     unit_id: {type: Schema.Types.ObjectId, ref: 'Unit', required: true},
+    vatIncluded: {type: Boolean, required: true, default: true},
     createdDate: {type: Date, default: Date.now},
     updatedDate: {type: Date, default: Date.now}
 });
