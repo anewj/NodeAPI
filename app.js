@@ -62,7 +62,7 @@ const swaggerDocs = swaggerJsDoc({
             jwt: []
         }],
     },
-    apis: ["src/authentication/routes/AuthRouter.js", "src/app/routes/*/*.js"],
+    apis: ["/Users/anewjmaharjan/projects/NodeAPI/routes/controllers/*.js"],
 });
 
 // swagger options

@@ -8,7 +8,45 @@ const roleService = require('services/role.service');
 const config = require('config/config.json');
 
 
-// routes
+/**
+ * Authenticate user
+ *
+ * @swagger
+ * /users/authenticate:
+ *  post:
+ *      description: Authenticate User.
+ *      summary: Login.
+ *      tags:
+ *        - Authentication
+ *      produces:
+ *        - application/json
+ *      security: []
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          username:
+ *                              type: string
+ *                          password:
+ *                              type: string
+ *                      required:
+ *                          - username
+ *                          - password
+ *                          - slug
+ *                      example:
+ *                          username: erp_user
+ *                          password: erp_password
+ *      responses:
+ *          200:
+ *              description: OK
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
 router.post('/authenticate', authenticate);
 // router.post('/register', authorize([Role.SuperAdmin, Role.Admin]), register);
 router.post('/register', register);
