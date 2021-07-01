@@ -30,7 +30,55 @@ const chequeRouter = require('./routes/controllers/cheque.controller');
 const panNumberRouter = require('./routes/controllers/pan_number.controller');
 const loaderRouter = require('./routes/controllers/loader.controller');
 
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
 const app = express();
+
+// DOC for swaggerUI
+const swaggerDocs = swaggerJsDoc({
+    swagger: "2.0",
+    swaggerDefinition: {
+        openapi: '3.0.3',
+        info: {
+            title: "ERP API",
+            version: '0.1',
+            description: 'Api documentation for the ERP API',
+            contact: {
+                name: 'Logispark Technologies Pvt. Ltd. / Detech Solution Pvt. Ltd.'
+            }
+        },
+        components: {
+            securitySchemes: {
+                jwt: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    in: 'header',
+                    // bearerFormat: 'JWT',
+                }
+            }
+        },
+        security: [{
+            jwt: []
+        }],
+    },
+    apis: ["src/authentication/routes/AuthRouter.js", "src/app/routes/*/*.js"],
+});
+
+// swagger options
+const swaggerOptions = {
+    customCss: '.swagger-ui .topbar { display: none }',
+}
+// console.log(swaggerDocs)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, swaggerOptions));
+
+// Serve swagger docs the way you like (Recommendation: swagger-tools)
+app.get('/api-docs.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerDocs);
+});
+
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
@@ -61,7 +109,6 @@ app.use('/stock',stockRouter);
 app.use('/vendor',vendorRouter);
 app.use('/party',partyRouter);
 app.use('/stock_location',stock_locationRouter);
-app.use('/user_settings',user_settingsRouter);
 app.use('/user_settings',user_settingsRouter);
 app.use('/company_settings',company_settingsRouter);
 app.use('/invoice',invoiceRouter);

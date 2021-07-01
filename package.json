@@ -19,15 +19,17 @@
     "jsonwebtoken": "^8.2.2",
     "moment": "^2.27.0",
     "mongodb": "^3.2.7",
-    "mongoose": "^5.10.2",
+    "mongoose": "^5.13.0",
     "morgan": "~1.9.1",
     "observe": "^1.4.1",
     "rootpath": "^0.1.2",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6",
     "unirest": "^0.6.0"
   },
   "devDependencies": {
     "csv-parser": "^2.3.3",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "nodemon": "^1.19.1"
   }
 }
