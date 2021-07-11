@@ -13,18 +13,86 @@ router.get('/code/:code', getByCode);
 
 module.exports = router;
 
+/**
+ * @swagger
+ * /userRoles:
+ *  get:
+ *      description: Find all user roles.
+ *      summary: All user roles.    
+ *      tags:
+ *        - User Roles
+ *      produces:
+ *        - application/json    
+ *      security: []
+ *      responses:
+ *          200:
+ *              description: OK
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message  
+ *              
+ */
 function getAllUserRoles(req, res, next) {
     user_roleService.getAll()
         .then(user_role => res.json(user_role))
         .catch(err => next(err));
 }
 
+/**
+ * @swagger
+ * /userRoles:
+ *  post:
+ *      description: Insert a new user role
+ *      summary: Insert Role
+ *      tags:
+ *        - User Roles
+ *      produces:
+ *        - application/json
+ *      security: []
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          role_id: 
+ *                              type: string
+ *                              required: true
+ *                          
+ * 
+ */
 function insertUserRole(req, res, next) {
     user_roleService.create(req.body)
         .then(data => res.json(data))
         .catch(err => next(err));
 }
 
+/**
+ * @swagger
+ * /userRoles/{id}:
+ *  get:
+ *      description: Find user role by id
+ *      summary: User Role by id
+ *      tags:
+ *        - User Roles
+ *      produces:
+ *        - application.json    
+ *      security: []
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          descriptions: User role id
+ *          required: true
+ *      responses:
+ *          200:
+ *              description: OK
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
 function getById(req, res, next) {
     user_roleService.getById(req.params.id)
         .then(user_role => user_role ? res.json(user_role) : res.sendStatus(404))

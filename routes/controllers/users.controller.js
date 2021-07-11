@@ -51,8 +51,8 @@ router.post('/authenticate', authenticate);
 // router.post('/register', authorize([Role.SuperAdmin, Role.Admin]), register);
 router.post('/register', register);
 router.get('/', authorize([Role.SuperAdmin, Role.Admin]), getAll); // admin only
-router.get('/current', getCurrent);
-router.get('/:id', authorize(), getById);       // all authenticated users
+router.get('/current', authorize(), getCurrent);
+router.get('/:id', authorize([Role.SuperAdmin, Role.Admin]), getById);       // all authenticated users
 router.put('/:id', update);
 router.delete('/:id', _delete);
 
@@ -67,6 +67,56 @@ function authenticate(req, res, next) {
         .catch(err => next(err));
 }
 
+/**
+ * Register User
+ * 
+ * @swagger
+ * /users/register:
+ *  post:
+ *      description: Register New User.
+ *      summary: User Sign-up
+ *      tags:
+ *        - Authentication
+ *      produces:
+ *        - application/json
+ *      security: []
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          lastName:
+ *                              type: string
+ *                          firstName:
+ *                              type: string
+ *                          password:
+ *                              type: string
+ *                          username:
+ *                              type: string
+ *                          email:
+ *                              type: string
+ *                      required:
+ *                          - lastName
+ *                          - firstName
+ *                          - password
+ *                          - username
+ *                          - email
+ *                      example:
+ *                          lastName: user
+ *                          firstName: test
+ *                          password: erp_password
+ *                          username: erp_user
+ *                          email: testuser@gmail.com
+ *      responses:
+ *          200:
+ *              description: OK
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
 function register(req, res, next) {
     userService.create(req.body)
         .then(userJson => {
@@ -99,24 +149,96 @@ function register(req, res, next) {
         .catch(err => next(err));
 }
 
+/**
+ * Find all users.
+ * 
+ * @swagger
+ * /users:
+ *  get:
+ *      description: Return all users.
+ *      summary: Find all users.
+ *      tags:
+ *        - Users
+ *      security: 
+ *        - jwt: []
+ *      produces:
+ *        - application/json
+ *      responses:
+ *          200:
+ *              description: OK 
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message    
+ */
 function getAll(req, res, next) {
     userService.getAll()
         .then(users => res.json(users))
         .catch(err => next(err));
 }
 
+/**
+ * Get current user
+ * 
+ * @swagger
+ * /users/current:
+ *  get:
+ *      description: Find the current user  
+ *      summary: Find current user
+ *      tags:
+ *          - Users
+ *      security:
+ *          - jwt: []
+ *      produces:
+ *          - application/json
+ *      responses:
+ *          200:
+ *              description: OK 
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
 function getCurrent(req, res, next) {
     userService.getById(req.user.sub)
         .then(user => user ? res.json(user) : res.sendStatus(404))
         .catch(err => next(err));
 }
 
+/**
+ * All authenticated users.
+ * 
+ * @swagger
+ * /users/{UserId}:
+ *  get:
+ *      description: returns all authenticated users.
+ *      summary: All authenticated users.
+ *      tags:
+ *        - Users
+ *      security:
+ *        - jwt: []
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: path
+ *          name: UserId
+ *          descriptions: User Id
+ *          required: true
+ *      responses:
+ *          200:
+ *              description: OK
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
 function getById(req, res, next) {
     const currentUser = req.user;
     const id = parseInt(req.params.id);
+    console.log(req.user);
 
     // only allow admins to access other user records
-    if (id !== currentUser.sub && currentUser.role !== Role.Admin) {
+    if (id !== currentUser.sub) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
@@ -125,11 +247,76 @@ function getById(req, res, next) {
         .catch(err => next(err));
 }
 
+/**
+ * Update user
+ * 
+ * @swagger
+ * /users/{UserId}:
+ *  put:
+ *      description: Update username and password of users.
+ *      summary: Update user.
+ *      tags:
+ *        - Users
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: path
+ *          name: UserId
+ *          descriptions: User Id
+ *          required: true
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          username:
+ *                              type: string
+ *                          password:
+ *                              type: string
+ * 
+ *      responses:
+ *          200:
+ *              description: OK
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
+
+
 function update(req, res, next) {
     userService.update(req.params.id, req.body)
         .then(() => res.json({}))
         .catch(err => next(err));
 }
+
+/**
+ * Delete user
+ * 
+ * @swagger
+ * /users/{UserId}:
+ *  delete:
+ *      description: deletes a user
+ *      summary: delete user
+ *      tags:
+ *        - Users
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: path
+ *          name: UserId
+ *          descriptions: User Id
+ *          required: true
+ *      responses:
+ *          200:
+ *              description: OK
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
 
 function _delete(req, res, next) {
     userService.delete(req.params.id)
