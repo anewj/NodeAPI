@@ -15,6 +15,36 @@ module.exports = router;
 
 /**
  * @swagger
+ * components:
+ *  schemas:
+ *      UnitResponse:
+ *          type: object
+ *          properties:
+ *              _id:
+ *                  type: string
+ *                  example: 60d5df7378fb5d24e071ca4e
+ *              name:
+ *                  type: string
+ *                  example: BOX
+ *              code:
+ *                  type: string
+ *                  example: 001
+ *              createdDate: 
+ *                  type: string
+ *                  example: 2021-06-25T13:51:47.165Z
+ *              updatedDate:
+ *                  type: string
+ *                  example: 2021-06-25T13:51:47.181Z
+ *              __v:
+ *                  type: number
+ *                  example: 0
+ *              id:
+ *                  type: string
+ *                  example: 60d5df7378fb5d24e071ca4e
+ */
+
+/**
+ * @swagger
  * /unit:
  *  get:
  *      description: displays all units
@@ -27,6 +57,12 @@ module.exports = router;
  *      responses:
  *          200:
  *              description: OK 
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/UnitResponse'
  *          403:
  *              description: Access token does not have the required permission
  *          500:
@@ -69,7 +105,11 @@ function getAllUnits(req, res, next) {
  *                            code: test_code
  *       responses:
  *            200:
- *                description: OK 
+ *                description: OK
+ *                content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: '#/components/schemas/UnitResponse'   
  *            403:
  *                description: Access token does not have the required permission
  *            500:
@@ -98,6 +138,10 @@ function insertUnit(req, res, next) {
  *      responses:
  *          200:
  *              description: OK
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/UnitResponse'
  *          403:
  *              description: Access token does not have the required permission
  *          500:

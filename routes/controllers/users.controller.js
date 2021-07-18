@@ -9,6 +9,36 @@ const config = require('config/config.json');
 
 
 /**
+ * @swagger
+ * components:
+ *   schemas:
+ *      UserResponse:
+ *          type: object
+ *          properties:
+ *              _id:
+ *                  type: string
+ *                  example: 60d49002c9c64cb20a81d47e
+ *              lastName:
+ *                  type: string
+ *                  example: LastName
+ *              firstName:
+ *                  type: string
+ *                  example: FirstName
+ *              username:
+ *                  type: string
+ *                  example: erp_user
+ *              email: 
+ *                  type: string
+ *                  example: erpuser@gmail.com
+ *              createdDate:
+ *                  type: string
+ *                  example: 2021-07-11T08:24:59.660Z
+ *              __v: 
+ *                  type: number
+ *                  example: 0
+ */
+
+/**
  * Authenticate user
  *
  * @swagger
@@ -42,6 +72,44 @@ const config = require('config/config.json');
  *      responses:
  *          200:
  *              description: OK
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              user_id:    
+ *                                  type: string
+ *                                  example: 60d49948ef61fe0300f482ce
+ *                              _id:
+ *                                  type: string
+ *                                  example: 60d49002c9c64cb20a81d47e
+ *                              lastName:
+ *                                  type: string
+ *                                  example: LastName
+ *                              firstName:
+ *                                  type: string
+ *                                  example: FirstName
+ *                              username:
+ *                                  type: string
+ *                                  example: erp_user
+ *                              email: 
+ *                                  type: string
+ *                                  example: erpuser@gmail.com
+ *                              createdDate:
+ *                                  type: string
+ *                                  example: 2021-07-11T08:24:59.660Z
+ *                              __v: 
+ *                                  type: number
+ *                                  example: 0
+ *                              token: 
+ *                                  type: string
+ *                                  example: eyJfaasfI1NiIsInmkjjjJ9.eyJzdWIiOiI2MGQ0OTk0OGVmNjFmZTAzMDBmNDgyY2fasdfxlIjoic3VwZXJfYWRasdfasgrhasiOjE2MjU5OTE4OTl9.FoasdfasdgEeZmgi9YOXRtCjplqRi-gasdfasbadfg
+ *                              role:
+ *                                  type: string
+ *                                  example: Admin
+ *                              updatedDate: 
+ *                                  type: string
+ *                                  example: 2021-07-11T08:24:59.660Z
  *          403:
  *              description: Access token does not have the required permission
  *          500:
@@ -112,6 +180,14 @@ function authenticate(req, res, next) {
  *      responses:
  *          200:
  *              description: OK
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: string
+ *                                  example: User Created
  *          403:
  *              description: Access token does not have the required permission
  *          500:
@@ -165,7 +241,13 @@ function register(req, res, next) {
  *        - application/json
  *      responses:
  *          200:
- *              description: OK 
+ *              description: OK
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/UserResponse'      
  *          403:
  *              description: Access token does not have the required permission
  *          500:
@@ -194,6 +276,10 @@ function getAll(req, res, next) {
  *      responses:
  *          200:
  *              description: OK 
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/UserResponse'
  *          403:
  *              description: Access token does not have the required permission
  *          500:
@@ -227,6 +313,10 @@ function getCurrent(req, res, next) {
  *      responses:
  *          200:
  *              description: OK
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/UserResponse'
  *          403:
  *              description: Access token does not have the required permission
  *          500:
@@ -275,7 +365,6 @@ function getById(req, res, next) {
  *                              type: string
  *                          password:
  *                              type: string
- * 
  *      responses:
  *          200:
  *              description: OK
