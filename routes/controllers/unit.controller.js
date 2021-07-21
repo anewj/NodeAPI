@@ -10,6 +10,7 @@ var fs = require('fs');
 router.post('/',authorize([Role.Admin, Role.SuperAdmin]) , insertUnit);
 router.get('/', getAllUnits);
 router.get('/:id', getById);
+router.put('/:id', editUnit);
 
 module.exports = router;
 
@@ -146,10 +147,61 @@ function insertUnit(req, res, next) {
  *              description: Access token does not have the required permission
  *          500:
  *              description: Internal Server Error or Custom Error Message
- *      
  */
 function getById(req, res, next) {
     unitService.getById(req.params.id)
         .then(unit => unit ? res.json(unit) : res.sendStatus(404))
         .catch(err => next(err));
+}
+
+/**
+ * @swagger
+ * /unit/{id}:
+ *  put:
+ *      description: Edit measurement units
+ *      summary: Edit units
+ *      tags:
+ *          - Units
+ *      produces:
+ *          - application/json
+ *      security: []
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          description: Unit id
+ *          required: true
+ *      requestBody:
+ *           required: true
+ *           content:
+ *                application/json:
+ *                     schema:
+ *                        type: object
+ *                        properties: 
+ *                            name:  
+ *                                  type: string
+ *                            code:
+ *                                  type: string 
+ *                        required:
+ *                             - name
+ *                             - code
+ *                        example:
+ *                            name: test_name
+ *                            code: test_code
+ *      responses:
+ *          200:
+ *              description: OK
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/UnitResponse'
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
+function editUnit(req, res, next){
+    unitService.edit(req.params.id, req.body)
+        .then(data => res.json(data))
+        .catch(err => next(err));
+
 }

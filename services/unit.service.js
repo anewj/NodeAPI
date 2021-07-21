@@ -5,6 +5,7 @@ module.exports = {
     create,
     getAll,
     getById,
+    edit
 };
 async function create(unitParam) {
     // save product
@@ -24,4 +25,16 @@ async function getById(id) {
         return await Unit.findById(id).populate({path: 'manufacturer', select: 'manufacturer'});
     else
         return {};
+}
+
+async function edit(id, unitParam){
+    const unit = await Unit.findById(id);
+    if(unitParam.name){
+        unit.name = unitParam.name.toUpperCase();
+    }
+    if(unitParam.code){
+        unit.code = unitParam.code.toUpperCase();
+    }
+    await unit.save();
+    return unit;
 }
