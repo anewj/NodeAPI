@@ -1,5 +1,6 @@
 const db = require('../_helpers/db');
 const Unit = db.Unit;
+const stringUtils = require('../_helpers/stringUtils');
 
 module.exports = {
     create,
@@ -27,14 +28,7 @@ async function getById(id) {
         return {};
 }
 
-async function edit(id, unitParam){
-    const unit = await Unit.findById(id);
-    if(unitParam.name){
-        unit.name = unitParam.name.toUpperCase();
-    }
-    if(unitParam.code){
-        unit.code = unitParam.code.toUpperCase();
-    }
-    await unit.save();
-    return unit;
+async function edit(unitParam){
+    const unit = new Unit(stringUtils.objectValueToUpper(unitParam, 'name', 'code'));
+    return await Unit.findOneAndUpdate({_id: unitParam._id}, unit, {new: true});
 }

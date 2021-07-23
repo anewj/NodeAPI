@@ -10,7 +10,7 @@ var fs = require('fs');
 router.post('/',authorize([Role.Admin, Role.SuperAdmin]) , insertUnit);
 router.get('/', getAllUnits);
 router.get('/:id', getById);
-router.put('/:id', editUnit);
+router.put('/', editUnit);
 
 module.exports = router;
 
@@ -156,7 +156,7 @@ function getById(req, res, next) {
 
 /**
  * @swagger
- * /unit/{id}:
+ * /unit:
  *  put:
  *      description: Edit measurement units
  *      summary: Edit units
@@ -165,11 +165,6 @@ function getById(req, res, next) {
  *      produces:
  *          - application/json
  *      security: []
- *      parameters:
- *        - in: path
- *          name: id
- *          description: Unit id
- *          required: true
  *      requestBody:
  *           required: true
  *           content:
@@ -177,14 +172,18 @@ function getById(req, res, next) {
  *                     schema:
  *                        type: object
  *                        properties: 
+ *                            _id:
+ *                                  type: string
  *                            name:  
  *                                  type: string
  *                            code:
  *                                  type: string 
  *                        required:
+ *                             - _id
  *                             - name
  *                             - code
  *                        example:
+ *                            _id: 60e7dfe6e30a202660186bc9
  *                            name: test_name
  *                            code: test_code
  *      responses:
@@ -200,7 +199,7 @@ function getById(req, res, next) {
  *              description: Internal Server Error or Custom Error Message
  */
 function editUnit(req, res, next){
-    unitService.edit(req.params.id, req.body)
+    unitService.edit(req.body)
         .then(data => res.json(data))
         .catch(err => next(err));
 
