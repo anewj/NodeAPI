@@ -12,6 +12,7 @@ router.get('/number', getInvoiceNumber);
 router.get('/number/:invoiceNumber', getInvoiceByNumber);
 router.get('/dump/number/:invoiceNumber', getInvoiceDumpByNumber);
 // router.get('/:id', getByUserId);
+router.get('/date', getInvoiceByDate);
 
 module.exports = router;
 
@@ -384,4 +385,51 @@ function getInvoiceDumpByNumber(req, res, next) {
     invoiceService.getInvoiceDumpByNumber(req.params.invoiceNumber)
         .then(data => res.json(data))
         .catch(err => next(err));
+}
+
+/**
+ * @swagger
+ * /invoice/date:
+ *  get:
+ *      description: Find invoices withing a nepali date range
+ *      summary: Get invoices by nepali date
+ *      tags:
+ *          - Invoice
+ *      produces:
+ *          - application/json
+ *      security: []
+ *      requestBody:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          options:
+ *                              type: string
+ *                              example: quarterly
+ *                          fiscalYear:
+ *                              type: string
+ *                              example: 2077/78
+ *                          quarter:
+ *                              type: string
+ *                              example: Q4
+ *      responses:
+ *          200:
+ *              description: OK
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/InvoiceResponse'
+ *          403:
+ *              description: Access token does not have the required permission
+ *          500:
+ *              description: Internal Server Error or Custom Error Message
+ */
+
+function getInvoiceByDate(req, res, next){
+    invoiceService.getInvoiceByDate(req.body)
+        .then(data => res.json(data))
+        .catch(err => next(err))
 }

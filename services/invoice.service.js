@@ -10,12 +10,15 @@ const DailyAccount = db.DailyAccount;
 const Cheque = db.Cheque;
 const dailyAccountService = require('./daily_account.service');
 const chequeService = require('./cheque.service');
+const nepaliDateUtils = require('../_helpers/nepaliDateUtils');
+const NepaliDate = nepaliDateUtils.NepaliDate;
 module.exports = {
     create,
     getAll,
     getInvoiceNumber,
     getInvoiceByNumber,
-    getInvoiceDumpByNumber
+    getInvoiceDumpByNumber,
+    getInvoiceByDate
 };
 
 /**
@@ -174,4 +177,13 @@ async function getInvoiceByNumber(invoiceNumber) {
 
 async function getInvoiceDumpByNumber(invoiceNumber) {
     return await InvoiceDump.findOne({invoiceNumber: invoiceNumber})
+}
+
+async function getInvoiceByDate(invoiceDate){
+    const {startDate, endDate} = nepaliDateUtils.checkInput(invoiceDate);
+    return await Invoice.find({date: {
+            $gte: new Date(new NepaliDate(startDate).getEnglishDate().setHours(0,0,0)),
+            $lte: new Date(new NepaliDate(endDate).getEnglishDate().setHours(23, 59, 59))
+        }
+    });
 }
