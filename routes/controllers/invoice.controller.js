@@ -398,21 +398,42 @@ function getInvoiceDumpByNumber(req, res, next) {
  *      produces:
  *          - application/json
  *      security: []
- *      requestBody:
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          options:
- *                              type: string
- *                              example: quarterly
- *                          fiscalYear:
- *                              type: string
- *                              example: 2077/78
- *                          quarter:
- *                              type: string
- *                              example: Q4
+ *      parameters:
+ *        - in: query
+ *          name: options
+ *          schema:
+ *              type: string
+ *              enum: ['date-range', 'month', 'yearly', 'half-yearly', 'quarterly']
+ *          required: true
+ *          description: Options for invoice date filter
+ *          example: yearly
+ *        - in: query
+ *          name: fiscalYear
+ *          type: string
+ *          description: fiscal year
+ *          example: 2077/78
+ *        - in: query
+ *          name: quarter
+ *          schema:
+ *              type: string
+ *              enum: ['Q1', 'Q2', 'Q3', 'Q4']
+ *          description: The fiscal year quarter
+ *        - in: query
+ *          name: half
+ *          schema:
+ *              type: string
+ *              enum: ['H1','H2']
+ *          description: The fiscal year half
+ *        - in: query
+ *          name: startDate
+ *          type: string
+ *          description: The start date for the date range option
+ *          example: 2077/10/01
+ *        - in: query
+ *          name: endDate
+ *          type: string
+ *          description: The end date for the date range option
+ *          example: 2078/03/31
  *      responses:
  *          200:
  *              description: OK
@@ -429,7 +450,7 @@ function getInvoiceDumpByNumber(req, res, next) {
  */
 
 function getInvoiceByDate(req, res, next){
-    invoiceService.getInvoiceByDate(req.body)
+    invoiceService.getInvoiceByDate(req.query)
         .then(data => res.json(data))
         .catch(err => next(err))
 }
