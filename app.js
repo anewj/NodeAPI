@@ -29,6 +29,7 @@ const dailyAccountRouter = require('./routes/controllers/daily_account.controlle
 const chequeRouter = require('./routes/controllers/cheque.controller');
 const panNumberRouter = require('./routes/controllers/pan_number.controller');
 const loaderRouter = require('./routes/controllers/loader.controller');
+const batchRouter = require('./routes/controllers/batch.controller');
 
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -62,7 +63,7 @@ const swaggerDocs = swaggerJsDoc({
             jwt: []
         }],
     },
-    apis: ["/Users/anewjmaharjan/projects/NodeAPI/routes/controllers/*.js"],
+    apis: ["./routes/controllers/*.js"],
 });
 
 // swagger options
@@ -116,6 +117,7 @@ app.use('/dailyAccount',dailyAccountRouter);
 app.use('/cheque',chequeRouter);
 app.use('/pan',panNumberRouter);
 app.use('/load',loaderRouter)
+app.use('/batch', batchRouter);
 
 //API Error Handler
 app.use(errorHandler);

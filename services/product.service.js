@@ -2,6 +2,7 @@ const db = require('../_helpers/db');
 const Product = db.Product;
 const Price = db.Price;
 const Stock = db.Stock;
+const Batch = db.Batch;
 const priceService = require('services/price.service');
 const mongoose = require('mongoose');
 
@@ -155,12 +156,21 @@ async function getById(id) {
         return await new Promise((resolve, reject) =>
             Product.findById(id).populate(['units.unit', 'vendor', 'defaultSellingUnit']).lean().exec(function (err, product) {
                 getPrice(id).then(productPrice =>
-                    getStock(id).then(productStock => {
-                            product.price = productPrice;
-                            product.stock = productStock;
-                            resolve(product);
-                        }
-                    ).catch(err => {
+                    getStock(id).then(productStock =>
+                        getBatch(id).then(productBatch => {
+                                product.price = productPrice;
+                                product.stock = productStock;
+                                product.batch = productBatch;
+                                resolve(product);
+                            }
+                        ).catch(err => {
+                            let error_data = [];
+                            for (data in err.errors) {
+                                error_data.push(
+                                    err.errors[data]
+                                )
+                            }
+                        })).catch(err => {
                         let error_data = [];
                         for (data in err.errors) {
                             error_data.push(
@@ -191,6 +201,13 @@ async function getStock(id) {
 async function getPrice(id) {
     if (db.mongoose.Types.ObjectId.isValid(id))
         return await Price.findOne({product_id: {_id: id}}).populate(['unit_id']);
+    else
+        return {};
+}
+
+async function getBatch(id){
+    if (db.mongoose.Types.ObjectId.isValid(id))
+        return await Batch.find({product_id: {_id: id}});
     else
         return {};
 }
