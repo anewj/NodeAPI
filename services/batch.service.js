@@ -31,5 +31,5 @@ async function getByProductId(id){
 }
 
 async function getByCode(code){
-    return await Batch.find({code: {$regex: code}});
+    return await Batch.find({code: {$regex: code}}).populate(['product_id']);
 }
